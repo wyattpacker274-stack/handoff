@@ -5,17 +5,33 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const source = fs.readFileSync(path.join(__dirname, 'Code.gs'), 'utf8');
-const headerRow = ['Received at', 'Name', 'Email', 'Studio', 'Website', 'Plan', 'Message', 'Status', 'Follow-up at', 'Follow-up sent at'];
+const headerRow = [
+  'Received at', 'Name', 'Email', 'Studio', 'Website', 'Plan', 'Message', 'Status',
+  'Next follow-up at', 'Follow-ups sent', 'Unsubscribe token', 'Payment link sent at'
+];
 
-function createSheet(rows = [headerRow]) {
-  return {
+function createSheet(rows = [headerRow.slice()]) {
+  const sheet = {
     rows,
+    frozenRows: 0,
     appendRow(row) { this.rows.push(row); },
     getLastRow() { return this.rows.length; },
     getDataRange() { return { getValues: () => this.rows.map((row) => row.slice()) }; },
-    getRange(row, column) { return { setValue: (value) => { this.rows[row - 1][column - 1] = value; } }; },
     setFrozenRows(value) { this.frozenRows = value; }
   };
+  sheet.getRange = (row, column, numRows = 1, numColumns = 1) => ({
+    setValue(value) { sheet.rows[row - 1][column - 1] = value; },
+    setValues(values) {
+      values.forEach((line, rowOffset) => {
+        const target = row - 1 + rowOffset;
+        if (!sheet.rows[target]) sheet.rows[target] = [];
+        line.forEach((value, columnOffset) => {
+          sheet.rows[target][column - 1 + columnOffset] = value;
+        });
+      });
+    }
+  });
+  return sheet;
 }
 
 function loadAutomation(options = {}) {
@@ -30,6 +46,7 @@ function loadAutomation(options = {}) {
   const triggers = options.triggers || [];
   const createdTriggers = [];
   const deletedTriggers = [];
+  let uuidCounter = 0;
   const spreadsheet = {
     getId: () => 'new-sheet-id',
     getUrl: () => 'https://sheets.example/new-sheet-id',
@@ -54,6 +71,9 @@ function loadAutomation(options = {}) {
       }
     },
     LockService: { getScriptLock: () => ({ waitLock: () => {}, releaseLock: () => {} }) },
+    Utilities: {
+      getUuid: () => '00000000-0000-4000-8000-' + String(++uuidCounter).padStart(12, '0')
+    },
     HtmlService: {
       createHtmlOutput: (content) => ({
         content,
@@ -61,6 +81,7 @@ function loadAutomation(options = {}) {
       })
     },
     ScriptApp: {
+      getService: () => ({ getUrl: () => 'https://script.example/exec' }),
       getProjectTriggers: () => triggers,
       deleteTrigger: (trigger) => deletedTriggers.push(trigger),
       newTrigger: (handler) => ({
@@ -95,9 +116,19 @@ function post(parameters) {
   return { parameter: parameters, postData: { contents: new URLSearchParams(parameters).toString() } };
 }
 
-test('setup creates the enquiry sheet and one hourly follow-up trigger', () => {
+function leadRow(overrides = {}) {
+  const now = Date.now();
+  const row = [
+    new Date(now - 90000000), 'Due Lead', 'due@example.com', 'Studio', '', 'guided', '',
+    'new', new Date(now - 1000), 0, 'abc00000000000000000000000000001', ''
+  ];
+  Object.entries(overrides).forEach(([index, value]) => { row[Number(index)] = value; });
+  return row;
+}
+
+test('setup creates the enquiry sheet and one hourly automation trigger', () => {
   const sheet = createSheet([]);
-  const oldTrigger = { getHandlerFunction: () => 'sendDueFollowUps_' };
+  const oldTrigger = { getHandlerFunction: () => 'runAutomation_' };
   const { context, properties, createdTriggers, deletedTriggers } = loadAutomation({
     sheet,
     triggers: [oldTrigger],
@@ -136,7 +167,7 @@ test('validation rejects unsafe or incomplete enquiry boundaries', () => {
   }
 });
 
-test('a valid request stores the lead and sends customer and owner emails', () => {
+test('a valid request stores the lead with its automation columns and sends both emails', () => {
   const { context, sheet, sent } = loadAutomation();
   const response = context.doPost(post(validParameters({ name: '=HYPERLINK("bad")' })));
   assert.match(response.content, /Request received/);
@@ -144,10 +175,19 @@ test('a valid request stores the lead and sends customer and owner emails', () =
   assert.equal(sheet.rows[1][1], "'=HYPERLINK(\"bad\")");
   assert.equal(sheet.rows[1][5], 'agency');
   assert.equal(sheet.rows[1][7], 'new');
+  assert.equal(sheet.rows[1][9], 0);
+  assert.match(String(sheet.rows[1][10]), /^[a-f0-9]{32}$/);
+  assert.ok(sheet.rows[1][8] instanceof Date);
   assert.equal(sent.length, 2);
   assert.equal(sent[0].to, 'maya@example.com');
   assert.equal(sent[1].to, 'owner@example.com');
   assert.doesNotMatch(response.content, /<script/);
+});
+
+test('every customer email carries a working opt-out link', () => {
+  const { context, sent } = loadAutomation();
+  context.doPost(post(validParameters()));
+  assert.match(sent[0].textBody, /https:\/\/script\.example\/exec\?unsubscribe=/);
 });
 
 test('confirmation HTML escapes user-provided content', () => {
@@ -173,34 +213,90 @@ test('honeypot submissions return a neutral response without side effects', () =
   assert.equal(sent.length, 0);
 });
 
-test('only due new enquiries receive one follow-up; active and closed leads are skipped', () => {
-  const now = Date.now();
+test('due new enquiries advance one step and stay new until the sequence ends', () => {
   const sheet = createSheet([
-    headerRow,
-    [new Date(now - 90000000), 'Due Lead', 'due@example.com', 'Studio', '', 'guided', '', 'new', new Date(now - 1000), ''],
-    [new Date(now), 'Future Lead', 'future@example.com', 'Studio', '', 'guided', '', 'new', new Date(now + 100000), ''],
-    [new Date(now - 90000000), 'Qualified Lead', 'qualified@example.com', 'Studio', '', 'guided', '', 'qualified', new Date(now - 1000), ''],
-    [new Date(now - 90000000), 'Closed Lead', 'closed@example.com', 'Studio', '', 'guided', '', 'won', new Date(now - 1000), '']
+    headerRow.slice(),
+    leadRow(),
+    leadRow({ 1: 'Future Lead', 2: 'future@example.com', 8: new Date(Date.now() + 100000) }),
+    leadRow({ 1: 'Qualified Lead', 2: 'qualified@example.com', 7: 'qualified' }),
+    leadRow({ 1: 'Closed Lead', 2: 'closed@example.com', 7: 'won' }),
+    leadRow({ 1: 'Opted Out', 2: 'out@example.com', 7: 'unsubscribed' })
   ]);
   const { context, sent } = loadAutomation({ sheet });
-  context.sendDueFollowUps_();
-  context.sendDueFollowUps_();
+  context.runAutomation_();
   assert.equal(sent.length, 1);
   assert.equal(sent[0].to, 'due@example.com');
-  assert.equal(sheet.rows[1][7], 'followed-up');
-  assert.ok(sheet.rows[1][9] instanceof Date);
-  assert.equal(sheet.rows[2][7], 'new');
+  assert.equal(sheet.rows[1][9], 1);
+  assert.equal(sheet.rows[1][7], 'new');
+  assert.ok(sheet.rows[1][8] instanceof Date);
+
+  context.runAutomation_();
+  assert.equal(sent.length, 1, 'a second run must not resend the same step');
 });
 
-test('a failed follow-up remains new so the next scheduled run can retry', () => {
-  const now = Date.now();
-  const sheet = createSheet([
-    headerRow,
-    [new Date(now - 90000000), 'Due Lead', 'due@example.com', 'Studio', '', 'guided', '', 'new', new Date(now - 1000), '']
-  ]);
+test('the third follow-up closes the sequence', () => {
+  const sheet = createSheet([headerRow.slice(), leadRow({ 9: 2 })]);
+  const { context, sheet: resultSheet, sent } = loadAutomation({ sheet });
+  context.runAutomation_();
+  assert.equal(sent.length, 1);
+  assert.equal(resultSheet.rows[1][9], 3);
+  assert.equal(resultSheet.rows[1][8], '');
+  assert.equal(resultSheet.rows[1][7], 'followed-up');
+});
+
+test('a failed follow-up keeps the row eligible so the next run retries', () => {
+  const sheet = createSheet([headerRow.slice(), leadRow()]);
   const { context, errors } = loadAutomation({ sheet, failMail: true });
-  context.sendDueFollowUps_();
+  context.runAutomation_();
   assert.equal(sheet.rows[1][7], 'new');
-  assert.equal(sheet.rows[1][9], '');
+  assert.equal(sheet.rows[1][9], 0);
+  assert.ok(sheet.rows[1][8] instanceof Date);
   assert.equal(errors.length, 1);
+});
+
+test('unsubscribe asks for confirmation before changing the row', () => {
+  const sheet = createSheet([headerRow.slice(), leadRow()]);
+  const { context } = loadAutomation({ sheet });
+
+  const prompt = context.doGet({ parameter: { unsubscribe: 'abc00000000000000000000000000001' } });
+  assert.match(prompt.content, /Stop emailing me/);
+  assert.match(prompt.content, /confirm=1/);
+  assert.equal(sheet.rows[1][7], 'new');
+
+  const done = context.doGet({ parameter: { unsubscribe: 'abc00000000000000000000000000001', confirm: '1' } });
+  assert.match(done.content, /Unsubscribed/);
+  assert.equal(sheet.rows[1][7], 'unsubscribed');
+  assert.equal(sheet.rows[1][8], '');
+});
+
+test('an unknown or malformed unsubscribe token does nothing', () => {
+  const sheet = createSheet([headerRow.slice(), leadRow()]);
+  const { context } = loadAutomation({ sheet });
+  assert.match(context.doGet({ parameter: { unsubscribe: 'deadbeefdeadbeefdeadbeefdeadbeef' } }).content, /not on the list/);
+  assert.match(context.doGet({ parameter: { unsubscribe: '<script>' } }).content, /not valid/);
+  assert.equal(sheet.rows[1][7], 'new');
+});
+
+test('qualifying a lead sends the payment link once when a checkout URL exists', () => {
+  const sheet = createSheet([headerRow.slice(), leadRow({ 7: 'qualified' })]);
+  const { context, sheet: resultSheet, sent } = loadAutomation({
+    sheet,
+    properties: { CHECKOUT_URL: 'https://buy.example/handoff' }
+  });
+  context.runAutomation_();
+  assert.equal(sent.length, 1);
+  assert.match(sent[0].textBody, /https:\/\/buy\.example\/handoff/);
+  assert.equal(resultSheet.rows[1][7], 'invoiced');
+  assert.ok(resultSheet.rows[1][11] instanceof Date);
+
+  context.runAutomation_();
+  assert.equal(sent.length, 1, 'the payment link must not be resent');
+});
+
+test('qualifying a lead does nothing while no checkout URL is configured', () => {
+  const sheet = createSheet([headerRow.slice(), leadRow({ 7: 'qualified' })]);
+  const { context, sent } = loadAutomation({ sheet });
+  context.runAutomation_();
+  assert.equal(sent.length, 0);
+  assert.equal(sheet.rows[1][7], 'qualified');
 });
