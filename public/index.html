@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Handoff turns an existing quote form into a structured WebMCP tool that AI agents can prepare and customers review before submitting.">
+  <meta name="theme-color" content="#19192b">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Handoff">
+  <meta property="og:title" content="Handoff — Make your quote form agent-ready">
+  <meta property="og:description" content="A self-contained script that exposes an existing quote form through WebMCP. Compatible agents prepare it; the customer reviews and submits.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Handoff — Make your quote form agent-ready">
+  <meta name="twitter:description" content="A self-contained script that exposes an existing quote form through WebMCP. Compatible agents prepare it; the customer reviews and submits.">
+  <title>Handoff — Make your quote form agent-ready</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="handoff-core.js" defer></script>
+  <script src="generator.js" defer></script>
+  <script src="config.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Handoff home"><span class="brand-mark" aria-hidden="true">H<span>→</span></span>handoff</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Toggle navigation</span><span></span><span></span></button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a href="#why">Why now</a>
+      <a href="#generator">Generator</a>
+      <a href="#demo">Live demo</a>
+      <a class="button button-small" href="#pilot">Request a pilot</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero page-shell">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> Built for the agentic web</p>
+        <h1>When AI stops browsing.<br><em>Be ready to do business.</em></h1>
+        <p class="hero-lede">Handoff turns your existing quote form into a structured tool that AI agents can understand and prepare. Your customer reviews everything before anything is sent.</p>
+        <div class="hero-actions">
+          <a class="button" href="#generator">Generate your script <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="#demo">Watch an agent handoff <span aria-hidden="true">↓</span></a>
+        </div>
+        <p class="support-note"><span class="pulse-dot"></span><span id="browser-support">Checking WebMCP support…</span></p>
+      </div>
+      <div class="agent-card" aria-label="Example agent handoff">
+        <div class="agent-card-top"><span>AGENT SESSION / QUOTE REQUEST</span><span class="live-pill">STRUCTURED</span></div>
+        <div class="agent-line"><span class="line-index">01</span><div><small>READ</small><strong>get_quote_requirements</strong></div><span class="line-check">✓</span></div>
+        <div class="agent-line"><span class="line-index">02</span><div><small>CONFIRM</small><strong>Service + customer details</strong></div><span class="line-check">✓</span></div>
+        <div class="agent-line active-line"><span class="line-index">03</span><div><small>PREPARE</small><strong>prepare_quote_request</strong></div><span class="line-arrow">→</span></div>
+        <div class="review-card">
+          <span class="review-icon" aria-hidden="true">◎</span>
+          <div><strong>Human review stays in the loop</strong><p>The agent fills the form. The customer chooses to submit.</p></div>
+        </div>
+        <div class="agent-code"><span>status</span>: <strong>"review_required"</strong><br><span>submitted</span>: <strong>false</strong></div>
+      </div>
+    </section>
+
+    <section class="signal-strip" aria-label="Product principles">
+      <div class="page-shell"><span>NO REBUILD</span><i>·</i><span>NO FORM SCRAPING</span><i>·</i><span>NO SILENT SUBMISSION</span><i>·</i><span>ONE DROP-IN SCRIPT</span></div>
+    </section>
+
+    <section id="why" class="why-section page-shell">
+      <div class="section-heading">
+        <p class="eyebrow"><span></span> The interface is changing</p>
+        <h2>Agents need actions.<br>Not another clever chatbot.</h2>
+      </div>
+      <div class="why-grid">
+        <article><span class="card-number">01</span><h3>Expose the workflow</h3><p>Give compatible agents a clear list of services and required details instead of asking them to guess what your form means.</p></article>
+        <article><span class="card-number">02</span><h3>Keep the form you have</h3><p>Handoff maps to ordinary name, email, service, and message fields. Unsupported browsers keep the normal form with no extra behavior.</p></article>
+        <article><span class="card-number">03</span><h3>Leave the yes to people</h3><p>The agent prepares a draft. The customer can inspect, edit, and submit it themselves. No mystery bookings or silent commitments.</p></article>
+      </div>
+      <p class="standards-note">WebMCP is an emerging browser API, not a universal standard yet. Handoff feature-detects it and degrades cleanly. <a href="https://developer.chrome.com/docs/ai/webmcp" target="_blank" rel="noopener noreferrer">Read the current Chrome documentation ↗</a></p>
+    </section>
+
+    <section id="generator" class="generator-section">
+      <div class="page-shell generator-grid">
+        <div class="generator-copy">
+          <p class="eyebrow eyebrow-light"><span></span> Build your handoff</p>
+          <h2>One form in.<br>One agent-ready script out.</h2>
+          <p>Generate a self-contained <code>handoff.js</code> for a business and its services. No account, API key, tracking pixel, or external dependency.</p>
+          <ul class="plain-checks"><li>Two structured WebMCP tools</li><li>Input and form-field validation</li><li>Customer review before submission</li><li>Compatibility fallback built in</li></ul>
+        </div>
+        <form id="generator-form" class="builder-card">
+          <div class="builder-top"><span>GENERATOR / 01</span><span>LOCAL ONLY</span></div>
+          <label for="business-name">Business or client name</label>
+          <input id="business-name" name="businessName" value="Northstar Cleaning" maxlength="100" required>
+          <label for="services">Services <span>comma-separated, up to 12</span></label>
+          <textarea id="services" name="services" rows="3" required>Deep cleaning, Move-out cleaning, Office cleaning</textarea>
+          <div class="config-preview">
+            <span>GENERATED CONFIG</span>
+            <pre id="config-code"></pre>
+          </div>
+          <button class="button button-accent button-full" type="submit">Download handoff.js <span aria-hidden="true">↓</span></button>
+          <p id="generator-status" class="form-note" role="status">The file is generated in your browser. Your entries never leave this page.</p>
+        </form>
+      </div>
+    </section>
+
+    <section id="demo" class="demo-section page-shell">
+      <div class="section-heading split-heading">
+        <div><p class="eyebrow"><span></span> Live product demo</p><h2>Let the agent prep.<br>You keep the send button.</h2></div>
+        <p>This is a simulated agent conversation calling the real Handoff quote engine. It demonstrates the workflow even when your browser does not expose WebMCP.</p>
+      </div>
+      <div class="demo-grid">
+        <div class="chat-panel">
+          <div class="panel-label"><span>SIMULATED AGENT</span><span class="demo-tag">REAL ENGINE</span></div>
+          <div class="chat-bubble customer-bubble">Hi, I’m Maya Chen. I need the first available service for a three-bedroom home. My email is maya@example.com.</div>
+          <div class="chat-bubble agent-bubble">I found the quote requirements. I can prepare the form with those details, then leave it for you to review.</div>
+          <div class="tool-call"><span>→</span><div><small>TOOL CALL</small><code>prepare_quote_request</code></div></div>
+          <button id="run-demo" class="button button-full" type="button">Run the agent handoff <span aria-hidden="true">→</span></button>
+          <button id="reset-demo" class="reset-button" type="button">Reset demo</button>
+          <pre id="agent-result" class="agent-result" aria-live="polite">Waiting for the tool call…</pre>
+        </div>
+        <form id="quote-form" class="quote-form" data-handoff-quote>
+          <div class="quote-form-top"><div><small>QUOTE REQUEST</small><h3><span data-business-name>Northstar Cleaning</span></h3></div><span class="ordinary-badge">YOUR EXISTING FORM</span></div>
+          <div class="form-row">
+            <div><label for="quote-name">Name</label><input id="quote-name" name="name" autocomplete="name" required></div>
+            <div><label for="quote-email">Email</label><input id="quote-email" name="email" type="email" autocomplete="email" required></div>
+          </div>
+          <div class="form-row">
+            <div><label for="quote-phone">Phone <span>optional</span></label><input id="quote-phone" name="phone" type="tel" autocomplete="tel"></div>
+            <div><label for="quote-date">Preferred date <span>optional</span></label><input id="quote-date" name="preferredDate" type="date"></div>
+          </div>
+          <label for="quote-service">Service</label>
+          <select id="quote-service" name="service" required></select>
+          <label for="quote-message">Tell us about the job</label>
+          <textarea id="quote-message" name="message" rows="4" required></textarea>
+          <button class="button button-full" type="submit">Review complete — submit request</button>
+          <p id="demo-submit-status" class="form-note" role="status">Nothing sends until the customer uses this button.</p>
+        </form>
+      </div>
+    </section>
+
+    <section id="install" class="install-section">
+      <div class="page-shell install-grid">
+        <div>
+          <p class="eyebrow"><span></span> Ship the upgrade</p>
+          <h2>Three edits.<br>No platform migration.</h2>
+          <p class="install-lede">Use the generator yourself, or sell a guided installation to a client who wants the mapping, testing, and origin-trial setup handled.</p>
+          <div class="price-line"><span>Guided installation</span><strong>$199 <small>one-time</small></strong></div>
+          <div class="price-line"><span>Agency pilot · 3 sites</span><strong>$499 <small>one-time</small></strong></div>
+          <a class="button install-cta" href="#pilot">Request a fit review <span aria-hidden="true">→</span></a>
+        </div>
+        <ol class="install-steps">
+          <li><span>01</span><div><h3>Mark the quote form</h3><p>Add <code>data-handoff-quote</code> to your existing <code>&lt;form&gt;</code>. Use field names <code>name</code>, <code>email</code>, <code>phone</code>, <code>service</code>, <code>preferredDate</code>, and <code>message</code>.</p></div></li>
+          <li><span>02</span><div><h3>Load the generated file</h3><p>Upload <code>handoff.js</code> beside your site and add <code>&lt;script src="handoff.js" defer&gt;&lt;/script&gt;</code> before <code>&lt;/body&gt;</code>.</p></div></li>
+          <li><span>03</span><div><h3>Test both paths</h3><p>Run the ordinary form and an agent preparation. Follow Chrome’s current origin-trial requirements where WebMCP support is being tested.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="pilot" class="pilot-section page-shell">
+      <div class="pilot-grid">
+        <div class="pilot-copy">
+          <p class="eyebrow"><span></span> Start with one real form</p>
+          <h2>Bring the site.<br>Leave with evidence.</h2>
+          <p>Request a fit review for your studio or client. We’ll check the existing form, confirm the scope, and send the next step before any invoice.</p>
+          <ul class="pilot-points">
+            <li><strong>No charge to ask.</strong> The request starts a fit review, not a subscription or payment.</li>
+            <li><strong>Clear scope before work.</strong> You’ll know whether the standard installation fits.</li>
+            <li><strong>Human delivery.</strong> Deployment and client changes stay reviewable.</li>
+          </ul>
+        </div>
+        <form id="pilot-form" class="pilot-form" method="post">
+          <div class="builder-top"><span>PILOT REQUEST / 02</span><span>FIT REVIEW</span></div>
+          <div class="form-row">
+            <div><label for="pilot-name">Your name</label><input id="pilot-name" name="name" autocomplete="name" maxlength="80" required></div>
+            <div><label for="pilot-email">Work email</label><input id="pilot-email" name="email" type="email" autocomplete="email" maxlength="160" required></div>
+          </div>
+          <label for="pilot-studio">Studio or business</label>
+          <input id="pilot-studio" name="studio" autocomplete="organization" maxlength="100" required>
+          <label for="pilot-website">Website or example form <span>optional</span></label>
+          <input id="pilot-website" name="website" type="url" inputmode="url" placeholder="https://example.com/quote" maxlength="200">
+          <label for="pilot-plan">What are you considering?</label>
+          <select id="pilot-plan" name="plan" required>
+            <option value="guided">Guided installation · one site · $199</option>
+            <option value="agency">Agency pilot · up to three sites · $499</option>
+          </select>
+          <label for="pilot-message">What should we know? <span>optional</span></label>
+          <textarea id="pilot-message" name="message" rows="4" maxlength="1200" placeholder="Platform, number of forms, and anything non-standard."></textarea>
+          <div class="hp-field" aria-hidden="true"><label for="company-website">Leave this field empty</label><input id="company-website" name="company_website" tabindex="-1" autocomplete="off"></div>
+          <input id="form-started-at" name="formStartedAt" type="hidden">
+          <label class="consent-row" for="pilot-consent"><input id="pilot-consent" name="consent" type="checkbox" value="yes" required><span>Handoff may use these details to respond to this enquiry. No marketing list.</span></label>
+          <button class="button button-accent button-full" type="submit">Request my fit review <span aria-hidden="true">→</span></button>
+          <p id="pilot-status" class="form-note" role="status">No charge today. You’ll receive a confirmation and the scope will be reviewed before work begins.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="faq-section page-shell">
+      <div><p class="eyebrow"><span></span> Clear boundaries</p><h2>What this does.<br>And what it doesn’t.</h2></div>
+      <div class="faq-list">
+        <details><summary>Does this work in every browser today?</summary><p>No. WebMCP support is emerging and may require a Chrome origin trial. Handoff detects support at runtime. Other visitors keep your ordinary form.</p></details>
+        <details><summary>Will an agent be able to book or buy silently?</summary><p>Not with this package. The included workflow only prepares the quote form. The customer must review and submit it.</p></details>
+        <details><summary>Does Handoff send data to an AI provider?</summary><p>No. The generated script contains your business name, services, validation, and form-mapping logic. It has no analytics, remote calls, or AI-provider integration.</p></details>
+        <details><summary>What happens after I request a pilot?</summary><p>You’ll receive a confirmation and the proposed scope will be reviewed against your existing form. Submitting the request does not charge you or authorize client-site changes. Scope and next steps come before any invoice.</p></details>
+        <details><summary>Is this an AI-search ranking tool?</summary><p>No. It exposes a quote workflow to compatible browser agents. It does not promise rankings, citations, recommendations, or more traffic.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer page-shell"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">H<span>→</span></span>handoff</a><p>Structured for agents. Accountable to people.</p><p>© <span id="year"></span> Handoff</p></footer>
+</body>
+</html>

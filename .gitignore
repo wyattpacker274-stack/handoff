@@ -1,0 +1,7 @@
+node_modules/
+operator.html
+server.cjs
+distribution/
+operations/
+*.log
+.DS_Store

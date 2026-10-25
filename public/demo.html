@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Northstar Cleaning — WebMCP fixture</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="handoff-core.js" defer></script>
+  <script src="demo.js" defer></script>
+</head>
+<body class="fixture-page">
+  <main class="fixture-shell">
+    <p class="eyebrow"><span></span> Handoff integration fixture</p>
+    <h1>Northstar Cleaning</h1>
+    <p>This standalone page exercises the real generated-script integration path.</p>
+    <form class="quote-form" data-handoff-quote>
+      <label>Name<input name="name" required></label>
+      <label>Email<input name="email" type="email" required></label>
+      <label>Phone<input name="phone" type="tel"></label>
+      <label>Service<select name="service" required><option>Deep cleaning</option><option>Move-out cleaning</option><option>Office cleaning</option></select></label>
+      <label>Preferred date<input name="preferredDate" type="date"></label>
+      <label>Job details<textarea name="message" required></textarea></label>
+      <button class="button" type="submit">Submit after review</button>
+    </form>
+    <pre id="fixture-status" class="agent-result">Registering…</pre>
+  </main>
+</body>
+</html>
