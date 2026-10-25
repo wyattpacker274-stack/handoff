@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Handoff turns an existing quote form into a structured WebMCP tool that AI agents can prepare and customers review before submitting.">
   <meta name="theme-color" content="#19192b">
+  <link rel="canonical" href="https://handofftool.com/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Handoff">
+  <meta property="og:url" content="https://handofftool.com/">
   <meta property="og:title" content="Handoff — Make your quote form agent-ready">
   <meta property="og:description" content="A self-contained script that exposes an existing quote form through WebMCP. Compatible agents prepare it; the customer reviews and submits.">
   <meta name="twitter:card" content="summary">
@@ -14,6 +16,56 @@
   <meta name="twitter:description" content="A self-contained script that exposes an existing quote form through WebMCP. Compatible agents prepare it; the customer reviews and submits.">
   <title>Handoff — Make your quote form agent-ready</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="alternate" type="text/plain" href="https://handofftool.com/llms.txt" title="Handoff for AI agents">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "Handoff",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Any",
+        "url": "https://handofftool.com/",
+        "description": "A self-contained script that exposes an existing quote form through the emerging WebMCP browser API. Compatible agents prepare the form; the customer reviews and submits it.",
+        "offers": [
+          { "@type": "Offer", "name": "Guided installation", "price": "199", "priceCurrency": "USD" },
+          { "@type": "Offer", "name": "Three-site agency pilot", "price": "499", "priceCurrency": "USD" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does this work in every browser today?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. WebMCP support is emerging and may require a Chrome origin trial. Handoff detects support at runtime. Other visitors keep your ordinary form." }
+          },
+          {
+            "@type": "Question",
+            "name": "Will an agent be able to book or buy silently?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Not with this package. The included workflow only prepares the quote form. The customer must review and submit it." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does Handoff send data to an AI provider?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. The generated script contains your business name, services, validation, and form-mapping logic. It has no analytics, remote calls, or AI-provider integration." }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens after I request a pilot?",
+            "acceptedAnswer": { "@type": "Answer", "text": "You'll receive a confirmation and the proposed scope will be reviewed against your existing form. Submitting the request does not charge you or authorize client-site changes. Scope and next steps come before any invoice." }
+          },
+          {
+            "@type": "Question",
+            "name": "Is this an AI-search ranking tool?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. It exposes a quote workflow to compatible browser agents. It does not promise rankings, citations, recommendations, or more traffic." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
   <link rel="stylesheet" href="styles.css">
   <script src="handoff-core.js" defer></script>
   <script src="generator.js" defer></script>

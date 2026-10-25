@@ -16,7 +16,9 @@
       .replace(/\u2028/g, '\\u2028')
       .replace(/\u2029/g, '\\u2029');
 
-    return coreSource + '\n;Handoff.start(' + serialized + ').catch((error) => console.error("Handoff registration failed:", error));\n';
+    return '/*! Handoff — agent-ready quote forms · https://handofftool.com */\n'
+      + coreSource
+      + '\n;Handoff.start(' + serialized + ').catch((error) => console.error("Handoff registration failed:", error));\n';
   }
 
   return { buildScript };

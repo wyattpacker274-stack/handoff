@@ -1,0 +1,34 @@
+# Handoff
+
+> Handoff generates a self-contained JavaScript file that exposes an existing quote form to browser-based AI agents through the emerging WebMCP API. Compatible agents prepare the form; the customer reviews every value and submits it themselves.
+
+## What it is
+
+- A browser script generator for independent web studios and small businesses.
+- The generated file registers two tools with `document.modelContext` (with a `navigator.modelContext` fallback):
+  - `get_quote_requirements` — read-only. Returns the form's fields, accepted values, and validation rules.
+  - `prepare_quote_request` — consequential. Fills the form, dispatches input events, and inserts a visible review notice. It never submits.
+- Output is a single static file. No backend, no API key, no analytics, no remote calls, no AI provider.
+
+## What it is not
+
+- Not a guarantee of agent traffic, leads, revenue, or AI-search rankings.
+- Not an agent-execution service. The demo on this site is a local simulation of tool registration, not evidence of native WebMCP execution.
+- Not supported in every browser. WebMCP support is emerging and may require a Chrome origin trial. Handoff detects support at runtime and leaves the ordinary form untouched elsewhere.
+- Not a system that books, buys, or sends anything on the customer's behalf.
+
+## Pages
+
+- [Home](https://handofftool.com/): product, generator, simulated agent demo, fit-review request form.
+- [Fixture demo](https://handofftool.com/demo.html): reports runtime WebMCP support and registration state.
+- [Sitemap](https://handofftool.com/sitemap.xml)
+
+## Pricing
+
+- $199 one-time: guided installation on one site.
+- $499 one-time: three-site agency pilot.
+- Fit review precedes any invoice. Custom work is quoted separately after the form is inspected.
+
+## Contact
+
+Fit-review requests are submitted through the form at https://handofftool.com/#pilot.
